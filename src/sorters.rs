@@ -1,6 +1,6 @@
 use rand::prelude::*;
 
-pub fn bubble_sort(array: &mut Vec<i32>) {
+pub fn bubble_sort<T: std::cmp::PartialOrd>(array: &mut Vec<T>) where T: Copy {
     let mut made_changes_this_loop = true;
 
     while made_changes_this_loop {
@@ -18,7 +18,7 @@ pub fn bubble_sort(array: &mut Vec<i32>) {
     }
 }
 
-pub fn insertion_sort(array: &mut Vec<i32>) {
+pub fn insertion_sort<T: std::cmp::PartialOrd>(array: &mut Vec<T>) where T: Copy {
     for i in 0..array.len() {
         for i2 in 0..i {
             if array[i] < array[i2] {
@@ -29,7 +29,56 @@ pub fn insertion_sort(array: &mut Vec<i32>) {
     }
 }
 
-pub fn boggo_sort(array: &mut Vec<i32>) {
+pub fn quick_sort<T: std::cmp::PartialOrd>(array: &mut Vec<T>) where T: Copy {
+    if array.len() == 1 {
+        return;
+    } else if array.len() == 2 {
+        if array[0] > array[1] {
+            let x = array[0];
+            array[0] = array[1];
+            array[1] = x;
+        }
+        return;
+    }
+
+    let mut left: Vec<T> = Vec::new();
+    let mut right: Vec<T> = Vec::new();
+
+    let mut idx = 0;
+    let mut value: T = array[0];
+    while left.iter().len() == 0 || right.iter().len() == 0 {
+        left = Vec::new();
+        right = Vec::new();
+
+        value = array[idx];
+
+        for (cur_idx, val) in array.iter().enumerate() {
+            if cur_idx == idx {
+                continue;
+            }
+            if val <= &value {
+                left.push(*val);
+            } else {
+                right.push(*val);
+            }
+        }
+
+        idx += 1;
+    }
+
+    quick_sort(&mut left);
+    quick_sort(&mut right);
+
+    let mut idx = 0;
+    for arr in [&left, &vec![value], &right] {
+        for val in arr.iter() {
+            array[idx] = *val;
+            idx += 1;
+        }
+    }
+}
+
+pub fn boggo_sort<T: std::cmp::PartialOrd>(array: &mut Vec<T>) {
     let mut rng = rand::thread_rng();
     let mut sorted = false;
     while !sorted {

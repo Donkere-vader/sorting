@@ -48,18 +48,27 @@ fn run_all_benchmarks() {
         (insertion_sort, 1000),
     );
 
+    methods.insert(
+        "quick_sort",
+        (quick_sort, 10_000),
+    );
+
     for method_name in methods.keys() {
         let method = methods.get(method_name).unwrap();
 
-        let mut logger = Logger::new(format!("logs/{}_benchmark.log", method_name), true);
+        let mut logger = Logger::new(format!("benchmarks/{}_benchmark.log", method_name), true);
         run_benchmark(method.0, method.1, MAX_DURATION, &mut logger);
     }
 }
 
 fn main() {
     run_all_benchmarks();
+
+    // let mut logger = Logger::new(String::from("logs/quicksort_benchmark.log"), true);
+
+    // run_benchmark(quick_sort, 100_000, MAX_DURATION, &mut logger);
     
     // let mut arr = generate_random_arr(10);
-    // insertion_sort(&mut arr);
+    // quick_sort(&mut arr);
     // println!("{:?}", arr);
 }
