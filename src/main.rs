@@ -6,6 +6,8 @@ use utils::{ generate_random_arr, Logger };
 use std::collections::{ HashMap };
 use sorters::*;
 
+const MAX_DURATION: f64 = 1.0;
+
 fn run_benchmark(method: for<'r> fn(&'r mut std::vec::Vec<i32>), length_steps: u32, max_duration: f64, logger: &mut Logger) -> HashMap<u32, f64> {
     let mut timings = HashMap::new();
 
@@ -28,7 +30,7 @@ fn run_benchmark(method: for<'r> fn(&'r mut std::vec::Vec<i32>), length_steps: u
     timings
 }
 
-fn main() {
+fn run_all_benchmarks() {
     let mut methods: HashMap<&str, (for<'r> fn(&'r mut std::vec::Vec<i32>), u32)> = HashMap::new();
 
     methods.insert(
@@ -46,12 +48,17 @@ fn main() {
         (insertion_sort, 1000),
     );
 
-    let method_name = "boggo_sort";
-    let method = methods.get(method_name).unwrap();
+    for method_name in methods.keys() {
+        let method = methods.get(method_name).unwrap();
 
-    let mut logger = Logger::new(format!("logs/{}_benchmark.log", method_name), true);
-    run_benchmark(method.0, method.1, 1.0, &mut logger);
+        let mut logger = Logger::new(format!("logs/{}_benchmark.log", method_name), true);
+        run_benchmark(method.0, method.1, MAX_DURATION, &mut logger);
+    }
+}
 
+fn main() {
+    run_all_benchmarks();
+    
     // let mut arr = generate_random_arr(10);
     // insertion_sort(&mut arr);
     // println!("{:?}", arr);
