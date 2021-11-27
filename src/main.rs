@@ -1,26 +1,10 @@
+mod sorters;
 mod utils;
 
 use std::time::{ Instant };
 use utils::{ generate_random_arr, Logger };
 use std::collections::{ HashMap };
-
-fn bubble_sort(array: &mut Vec<i32>) {
-    let mut made_changes_this_loop = true;
-
-    while made_changes_this_loop {
-        made_changes_this_loop = false;
-        for i in 0..(array.len() - 1) {
-            let item1 = array[i];
-            let item2 = array[i + 1];
-
-            if item2 < item1 {
-                array[i] = item2;
-                array[i + 1] = item1;
-                made_changes_this_loop = true;
-            }
-        }
-    }
-}
+use sorters::{ bubble_sort };
 
 fn run_benchmark(method: for<'r> fn(&'r mut std::vec::Vec<i32>), max_duration: f64, logger: &mut Logger) -> HashMap<u32, f64> {
     let mut timings = HashMap::new();
