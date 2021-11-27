@@ -3,8 +3,8 @@ import json
 from rich import print
 import os
 
-for file_name in os.listdir("logs"):
-    with open(f"logs/{file_name}", "r") as f:
+for file_name in os.listdir("benchmarks"):
+    with open(f"benchmarks/{file_name}", "r") as f:
         lengths = []
         times = []
         for line in f.readlines():
