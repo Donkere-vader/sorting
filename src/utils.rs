@@ -15,10 +15,11 @@ pub fn generate_random_arr(length: u32) -> Vec<i32> {
 
 pub struct Logger {
     file: File,
+    mirror_to_console: bool,
 }
 
 impl Logger {
-    pub fn new(file_name: String) -> Logger {
+    pub fn new(file_name: String, mirror_to_console: bool) -> Logger {
         let path = Path::new(&file_name);
 
         let file = match File::create(&path) {
@@ -28,11 +29,13 @@ impl Logger {
 
         Logger {
             file: file,
+            mirror_to_console: mirror_to_console
         }
     }
 
     pub fn log(&mut self, mut text: String) {
         text = format!("{}\n", text);
+        if self.mirror_to_console { print!("{}", text); };
         match self.file.write(text.as_bytes()) {
             Err(err) => panic!("Error writing to file, ERR: {}", err),
             Ok(_) => {},
