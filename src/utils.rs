@@ -6,7 +6,7 @@ use std::path::Path;
 
 pub fn generate_random_arr(length: u32) -> Vec<i32> {
     let mut rng = rand::thread_rng();
-    let mut nums: Vec<i32> = (1..length as i32).collect();
+    let mut nums: Vec<i32> = (1..(length + 1) as i32).collect();
     nums.shuffle(&mut rng);
 
     nums
