@@ -1,6 +1,10 @@
-use std::time::{ Instant };
+mod utils;
 
-fn bubble_sort(array: &mut Vec<u32>) {
+use std::time::{ Instant };
+use utils::{ generate_random_arr, Logger };
+use std::collections::{ HashMap };
+
+fn bubble_sort(array: &mut Vec<i32>) {
     let mut made_changes_this_loop = true;
 
     while made_changes_this_loop {
@@ -18,19 +22,41 @@ fn bubble_sort(array: &mut Vec<u32>) {
     }
 }
 
+fn run_benchmark(method: for<'r> fn(&'r mut std::vec::Vec<i32>), max_duration: f64, logger: &mut Logger) -> HashMap<u32, f64> {
+    let mut timings = HashMap::new();
 
-fn main() {
-    let array_lengths = [10, 100, 1000, 10_000, 100_000];
+    let mut length = 1000;
+    loop {
+        let mut arr: Vec<i32> = generate_random_arr(length);
 
-    for length in array_lengths {
         let now = Instant::now();
-
-        let mut arr: Vec<u32> = Vec::new();
-
-        bubble_sort(&mut arr);
-
+        method(&mut arr);
         let elapsed = now.elapsed();
-        println!("Length: {} {}s", length, elapsed.as_secs_f64());
+
+        timings.insert(length, elapsed.as_secs_f64());
+        logger.log(format!("    {{\"length\": {}, \"time\": {} }},", length, elapsed.as_secs_f64()));
+        if elapsed.as_secs_f64() > max_duration {
+            break;
+        }
+        length = length + 1000;
     }
 
+    timings
+}
+
+fn main() {
+    let mut methods: HashMap<&str, for<'r> fn(&'r mut std::vec::Vec<i32>)> = HashMap::new();
+
+    methods.insert(
+        "bubble_sort",
+        bubble_sort,
+    );
+
+    let method_name = "bubble_sort";
+    let method = methods.get(method_name).unwrap();
+
+    let mut logger = Logger::new(format!("logs/{}_benchmark.log", method_name));
+    logger.log(String::from("["));
+    run_benchmark(*method, 1.0, &mut logger);
+    logger.log(String::from("]"));
 }
