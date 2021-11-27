@@ -1,12 +1,13 @@
 mod sorters;
 mod utils;
+mod consts;
 
 use std::time::{ Instant, SystemTime };
 use utils::{ generate_random_arr, Logger };
 use std::collections::{ HashMap };
 use sorters::*;
+use consts::*;
 
-const MAX_DURATION: f64 = 1.0;
 
 fn run_benchmark(method: for<'r> fn(&'r mut std::vec::Vec<i32>), length_steps: u32, max_duration: f64, logger: &mut Logger) -> HashMap<u32, f64> {
     let mut timings = HashMap::new();
