@@ -1,4 +1,6 @@
 use rand::prelude::*;
+use std::thread;
+use num_cpus;
 
 pub fn bubble_sort<T: std::cmp::PartialOrd>(array: &mut Vec<T>) where T: Copy {
     let mut made_changes_this_loop = true;
@@ -25,6 +27,63 @@ pub fn insertion_sort<T: std::cmp::PartialOrd>(array: &mut Vec<T>) where T: Copy
                 array.insert(i2, array[i]);
                 array.remove(i + 1);
             }
+        }
+    }
+}
+
+pub fn threaded_quick_sort(array: &mut Vec<i32>) {
+    let n_cpus = num_cpus::get();
+    if array.iter().len() < (n_cpus * 2) {
+        quick_sort(array);
+        return;
+    }
+
+    let mut sub_vectors: Vec<Vec<i32>> = Vec::new();
+    let cut_idx: Vec<usize> = (0..n_cpus).collect();
+    let mut cut_values: Vec<i32> = Vec::new();
+    for i in 0..(n_cpus - 1) {
+        sub_vectors.push(Vec::new());
+        cut_values.push(array[cut_idx[i]]);
+    }
+    quick_sort(&mut cut_values);
+
+    let mut rest_arr = Vec::new();
+    for num in array.iter() {
+        let mut prev_cut_value = &i32::MIN;
+        let mut placed = false;
+        for (idx, cut_value) in cut_values.iter().enumerate() {
+            if num < cut_value && num > prev_cut_value {
+                sub_vectors[idx].push(*num);
+                placed = true;
+                break;
+            }
+            prev_cut_value = cut_value;
+        }
+        if !placed {
+            rest_arr.push(*num);
+        }
+    }
+    sub_vectors.push(rest_arr);
+
+    let mut threads: Vec<thread::JoinHandle<Vec<i32>>> = Vec::new();
+
+    for sub in sub_vectors {
+        threads.push(
+                thread::spawn(move || {
+                let mut s: Vec<i32> = (*sub).to_vec();
+                quick_sort(&mut s);
+
+                s
+            })
+        );
+    }
+
+    array.clear();
+
+    for handle in threads {
+        match handle.join() {
+            Ok(mut sub_vector) => { array.append(&mut sub_vector) },
+            _ => {},
         }
     }
 }

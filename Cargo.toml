@@ -7,4 +7,4 @@ edition = "2018"
 
 [dependencies]
 rand = "0.8.4"
-json = "0.12.4"
+num_cpus = "0.2"
