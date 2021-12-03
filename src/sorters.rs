@@ -152,3 +152,38 @@ pub fn boggo_sort<T: std::cmp::PartialOrd>(array: &mut Vec<T>) {
         }
     }
 }
+
+pub fn merge_sort(array: &mut Vec<i32>) {
+    if array.len() == 1 {
+        return;
+    }
+
+    let halfpoint = array.len() / 2;
+
+    let mut left = Vec::new();
+    let mut right = Vec::new();
+
+    for (idx, value) in array.iter().enumerate() {
+        if idx < halfpoint {
+            left.push(*value);
+        } else {
+            right.push(*value);
+        }
+    }
+
+    merge_sort(&mut left);
+    merge_sort(&mut right);
+
+    array.clear();
+
+    while left.len() > 0 && right.len() > 0 {
+        if left[0] < right[0] {
+            array.push(left.remove(0));
+        } else {
+            array.push(right.remove(0))
+        }
+    }
+
+    array.append(&mut left);
+    array.append(&mut right);
+}
