@@ -63,10 +63,10 @@ fn run_all_benchmarks() {
 
     methods.insert(
         "merge_sort",
-        (merge_sort, 10_000)
+        (merge_sort, 100_000)
     );
 
-    for method_name in ["merge_sort"] {
+    for method_name in methods.keys() {
         bench_logger.log(format!("Running {}...", method_name));
         let method = methods.get(method_name).unwrap();
 
@@ -77,7 +77,4 @@ fn run_all_benchmarks() {
 
 fn main() {
     run_all_benchmarks();
-
-    // let mut logger = Logger::new(String::from("logs/quicksort_benchmark.log"), true);
-    // run_benchmark(merge_sort, 10_000, MAX_DURATION, &mut logger);
 }

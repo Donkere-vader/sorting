@@ -154,36 +154,49 @@ pub fn boggo_sort<T: std::cmp::PartialOrd>(array: &mut Vec<T>) {
 }
 
 pub fn merge_sort(array: &mut Vec<i32>) {
-    if array.len() == 1 {
+    private_merge_sort(array, (0, array.len()));
+}
+
+fn private_merge_sort(array: &mut Vec<i32>, range: (usize, usize)) {
+    // range.0 inclusive & range.1 exclusive
+    if range.1 <= range.0 + 1 {
         return;
     }
 
-    let halfpoint = array.len() / 2;
+    let halfpoint = (range.1 - range.0) / 2 + range.0;
 
-    let mut left = Vec::new();
-    let mut right = Vec::new();
+    private_merge_sort(array, (range.0, halfpoint));
+    private_merge_sort(array, (halfpoint, range.1));
 
-    for (idx, value) in array.iter().enumerate() {
-        if idx < halfpoint {
-            left.push(*value);
+    let mut merged: Vec<i32> = Vec::new();
+    let mut left_idx = range.0;
+    let mut right_idx = halfpoint;
+
+    while left_idx < halfpoint && right_idx < range.1 {
+        if array[left_idx] < array[right_idx] {
+            merged.push(array[left_idx]);
+            left_idx += 1;
         } else {
-            right.push(*value);
+            merged.push(array[right_idx]);
+            right_idx += 1
         }
     }
 
-    merge_sort(&mut left);
-    merge_sort(&mut right);
-
-    array.clear();
-
-    while left.len() > 0 && right.len() > 0 {
-        if left[0] < right[0] {
-            array.push(left.remove(0));
-        } else {
-            array.push(right.remove(0))
+    if left_idx == halfpoint {
+        while right_idx < range.1 {
+            merged.push(array[right_idx]);
+            right_idx += 1;
         }
     }
 
-    array.append(&mut left);
-    array.append(&mut right);
+    if right_idx == range.1 {
+        while left_idx < halfpoint {
+            merged.push(array[left_idx]);
+            left_idx += 1;
+        }
+    }
+
+    for (idx, num) in merged.iter().enumerate() {
+        array[idx + range.0] = *num;
+    }
 }
